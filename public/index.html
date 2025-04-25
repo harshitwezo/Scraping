@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live In-Play Matches</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 1rem; background: #f4f4f4; }
+    h1 { font-weight: bold; font-size:1.5rem; margin-bottom:1rem }
+    .flex { display:flex }
+    .space-x-8>*+* { margin-left:2rem }
+    .mb-4 { margin-bottom:1rem }
+    .text-blue-600 { color:#2563EB; font-weight:bold }
+
+    #matches {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+      gap:1rem;
+    }
+    .match {
+      background:white;
+      border-radius:8px;
+      box-shadow:0 2px 5px rgba(0,0,0,0.1);
+      padding:1rem;
+      transition:background 0.3s;
+    }
+    .time { background:#FEF3C7;padding:2px 6px;border-radius:4px;font-size:0.9rem;display:inline-block;margin-bottom:0.5rem }
+    .teams { font-weight:bold;margin-bottom:0.5rem;display:block }
+    .score { font-size:1.1rem;font-weight:bold;margin-left:0.5rem }
+    .odds { display:flex;justify-content:space-between;margin-top:0.75rem }
+    .odds div { flex:1;background:#E0F2FE;margin:0 2px;padding:4px 0;text-align:center;border-radius:4px;font-size:0.9rem }
+    .more-bets { margin-top:0.5rem;font-size:0.85rem;color:#555 }
+    @keyframes flash { 0% {background-color:#fffae6} 100% {background-color:white} }
+    .match.changed { animation:flash 1s ease }
+  </style>
+</head>
+<body>
+  <h1>⚽ Live In-Play Matches</h1>
+  <div class="flex space-x-8 mb-4">
+    <div>All Sports <span id="count-all" class="text-blue-600">0</span></div>
+    <div>Football  <span id="count-football" class="text-blue-600">0</span></div>
+    <div>Tennis    <span id="count-tennis" class="text-blue-600">0</span></div>
+  </div>
+  <div id="matches">Loading…</div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket    = io();
+    const container = document.getElementById('matches');
+    const allCount  = document.getElementById('count-all');
+    const footCount = document.getElementById('count-football');
+    const tenCount  = document.getElementById('count-tennis');
+
+    socket.on('liveData', ({ data, ts, idx, type }) => {
+      console.log(`⚡️ recv @${new Date(ts).toLocaleTimeString()}; latency=${Date.now()-ts}ms; type=${type}; idx=${idx}`);
+
+      // update counts
+      allCount.textContent  = data.length;
+      footCount.textContent = data.length;
+      tenCount.textContent  = 0;
+
+      // re-render
+      container.innerHTML = '';
+      data.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'match';
+        card.innerHTML = `
+          <span class="time">${m.time}</span>
+          ${m.score ? `<span class="score">${m.score}</span>` : ''}
+          <span class="teams">${m.teams.join(' vs ')}</span>
+          <div class="odds">
+            <div>${m.homeOdd||'–'}</div>
+            <div>${m.drawOdd||'–'}</div>
+            <div>${m.awayOdd||'–'}</div>
+          </div>
+          ${m.moreBets?`<div class="more-bets">${m.moreBets} more</div>`:''}
+        `;
+        container.appendChild(card);
+      });
+
+      // flash only on non-time changes
+      if (typeof idx==='number' && type!=='time') {
+        const el = container.children[idx];
+        if (el) {
+          el.classList.add('changed');
+          setTimeout(() => el.classList.remove('changed'), 1000);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
