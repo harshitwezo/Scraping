@@ -28,7 +28,7 @@
     .score { font-size:1.1rem;font-weight:bold;margin-left:0.5rem }
     .odds { display:flex;justify-content:space-between;margin-top:0.75rem }
     .odds div { flex:1;background:#E0F2FE;margin:0 2px;padding:4px 0;text-align:center;border-radius:4px;font-size:0.9rem }
-    .more-bets { margin-top:0.5rem;font-size:0.85rem;color:#555 }
+    .more-bets { margin-top:0.5rem;font-size:0.85rem;color:#189f01 }
     @keyframes flash { 0% {background-color:#fffae6} 100% {background-color:white} }
     .match.changed { animation:flash 1s ease }
   </style>
@@ -71,7 +71,7 @@
             <div>${m.drawOdd||'–'}</div>
             <div>${m.awayOdd||'–'}</div>
           </div>
-          ${m.moreBets?`<div class="more-bets">${m.moreBets} more</div>`:''}
+          ${m.moreBets?`<div class="more-bets">${m.moreBets}</div>`:''}
         `;
         container.appendChild(card);
       });
