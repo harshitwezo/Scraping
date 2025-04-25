@@ -4,7 +4,7 @@ const http      = require('http');
 const socketIo  = require('socket.io');
 const puppeteer = require('puppeteer');
 
-const PORT           = process.env.PORT || 3000;
+const PORT           = process.env.PORT || 8080;
 const FULL_SCRAPE_MS = 30 * 1000; // for new events/structure
 const DYNAMIC_POLL_MS = 1 * 1000; // poll odds & moreBets every 1s
 const INPLAY_URL     = 'https://sports.williamhill.com/betting/en-gb/in-play/football';
