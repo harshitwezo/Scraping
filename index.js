@@ -97,7 +97,7 @@ async function dynamicPoll(page) {
 (async () => {
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: puppeteer.executablePath(),
+    executablePath: '/usr/bin/chromium',
     args: ['--no-sandbox','--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
